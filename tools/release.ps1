@@ -1,4 +1,4 @@
-# 發佈新版本：更新 manifest 版本號 → commit → 打標籤 → 推送。
+﻿# 發佈新版本：更新 manifest 版本號 → commit → 打標籤 → 推送。
 # GitHub Actions 收到標籤後會自動建立 Release，使用者的擴充功能就會提示更新。
 #
 # 用法（在專案根目錄）：
