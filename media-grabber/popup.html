@@ -15,8 +15,9 @@
       </div>
     </div>
     <div class="actions">
-      <button id="batch" class="icon-btn" title="多頁批次下載">
-        <svg viewBox="0 0 24 24"><rect x="7" y="3" width="13" height="15" rx="2"/><path d="M4 7v12a2 2 0 0 0 2 2h10"/></svg>
+      <button id="batch" class="text-btn" title="依網址中的頁碼，自動逐頁開啟並下載（例如 .../page/1、/2、/3…）">
+        <svg viewBox="0 0 24 24"><path d="M4 6h10"/><path d="M4 12h10"/><path d="M4 18h6"/><path d="m16 15 3 3 3-3"/><path d="M19 9v9"/></svg>
+        多頁下載
       </button>
       <button id="rescan" class="icon-btn" title="重新分析">
         <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
@@ -41,25 +42,23 @@
     <button data-type="audio">音訊<span class="count"></span></button>
   </nav>
 
-  <section class="filter-panel">
-    <div class="row">
-      <span class="label">圖片尺寸</span>
-      <div class="chips" id="sizeChips">
-        <button data-preset="0">不限</button>
-        <button data-preset="100">≥100</button>
-        <button data-preset="300">≥300</button>
-        <button data-preset="600">≥600</button>
-        <button data-preset="1000">≥1000</button>
-        <button data-preset="custom">自訂</button>
-      </div>
+  <section class="sizebar" title="只篩選圖片；留空代表不限">
+    <span class="label">圖片尺寸</span>
+    <div class="field">
+      <span>寬</span>
+      <input id="minW" type="number" min="0" placeholder="不限">
+      <span class="dash">~</span>
+      <input id="maxW" type="number" min="0" placeholder="不限">
     </div>
-    <div class="row custom" id="customSize" hidden>
-      <span class="label">寬</span>
-      <input id="minW" type="number" min="0" placeholder="最小"><span class="dash">–</span><input id="maxW" type="number" min="0" placeholder="最大">
-      <span class="label gap">高</span>
-      <input id="minH" type="number" min="0" placeholder="最小"><span class="dash">–</span><input id="maxH" type="number" min="0" placeholder="最大">
-      <span class="unit">px</span>
+    <div class="field">
+      <span>高</span>
+      <input id="minH" type="number" min="0" placeholder="不限">
+      <span class="dash">~</span>
+      <input id="maxH" type="number" min="0" placeholder="不限">
     </div>
+    <button id="clearSize" class="clear-btn" title="清除尺寸篩選">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
   </section>
 
   <div class="selbar">

@@ -121,5 +121,3 @@ th { color: var(--muted); font-weight: 500; }
 td.url { max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 td.ok { color: var(--ok); }
 td.err { color: var(--err); }
-.sizeRow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.sizeRow .chips { margin-top: 0; font-family: inherit; }

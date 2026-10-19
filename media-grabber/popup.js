@@ -17,7 +17,6 @@ const TAG = { video: '影片', audio: '音訊' };
 
 let media = [];            // 所有掃描到的項目
 let filter = 'all';        // 目前的分類
-let preset = '100';        // 尺寸快速選項（'custom' = 自訂）
 let currentTab = null;     // 被分析的分頁
 let probing = false;       // 正在量測未知尺寸的圖片
 const selected = new Set(); // 勾選的 url
@@ -30,31 +29,14 @@ function sizeFilter() {
   return f;
 }
 
-function setPreset(value) {
-  preset = value;
-  if (value !== 'custom') {
-    const n = Number(value) || '';
-    $('#minW').value = $('#minH').value = n;
-    $('#maxW').value = $('#maxH').value = '';
-  }
-  renderPreset();
-}
-
-function renderPreset() {
-  document.querySelectorAll('#sizeChips button').forEach((b) => b.classList.toggle('active', b.dataset.preset === preset));
-  $('#customSize').hidden = preset !== 'custom';
-}
-
 function saveSizeFilter() {
-  chrome.storage.local.set({ popupSize: { preset, ...sizeFilter() } });
+  chrome.storage.local.set({ popupSize: sizeFilter() });
 }
 
 async function restoreSizeFilter() {
-  const { popupSize } = await chrome.storage.local.get('popupSize');
-  if (!popupSize) return setPreset('100');
+  // 第一次使用：預設寬高至少 100，把小圖示濾掉
+  const { popupSize = { minW: 100, minH: 100 } } = await chrome.storage.local.get('popupSize');
   for (const k of SIZE_FIELDS) $('#' + k).value = popupSize[k] || '';
-  preset = popupSize.preset || 'custom';
-  renderPreset();
 }
 
 // ---------- 掃描 ----------
@@ -159,8 +141,6 @@ function renderItem(item) {
 
   const thumb = document.createElement('div');
   thumb.className = 'thumb';
-  const dim = document.createElement('span');
-  dim.className = 'dim';
 
   if (item.type === 'image') {
     const img = document.createElement('img');
@@ -171,7 +151,7 @@ function renderItem(item) {
       if (!item.width) {
         item.width = img.naturalWidth;
         item.height = img.naturalHeight;
-        updateDim();
+        sub.textContent = describe(item);
       }
     };
     img.onerror = () => img.replaceWith(htmlToNode(SVG.image));
@@ -188,13 +168,7 @@ function renderItem(item) {
   const tick = document.createElement('span');
   tick.className = 'tick';
   tick.innerHTML = SVG.check;
-  thumb.append(tick, dim);
-
-  const updateDim = () => {
-    dim.textContent = item.width && item.height ? `${item.width}×${item.height}` : '';
-    dim.hidden = !dim.textContent;
-  };
-  updateDim();
+  thumb.append(tick);
 
   const meta = document.createElement('div');
   meta.className = 'meta';
@@ -226,8 +200,9 @@ const SOURCE_LABEL = {
 function describe(item) {
   if (item.blocked) return item.blocked;
   if (item.note) return item.note;
-  if (item.type === 'image' && item.sizeChecked && !item.width) return '尺寸未知';
-  return SOURCE_LABEL[item.source] || item.source || '';
+  const size = item.width && item.height ? `${item.width} × ${item.height}`
+    : item.type === 'image' && item.sizeChecked ? '尺寸未知' : '';
+  return [size, SOURCE_LABEL[item.source] || item.source].filter(Boolean).join(' · ');
 }
 
 function updateFooter() {
@@ -272,10 +247,8 @@ $('#filters').addEventListener('click', (e) => {
   render();
 });
 
-$('#sizeChips').addEventListener('click', (e) => {
-  const btn = e.target.closest('button');
-  if (!btn) return;
-  setPreset(btn.dataset.preset);
+$('#clearSize').addEventListener('click', () => {
+  for (const k of SIZE_FIELDS) $('#' + k).value = '';
   saveSizeFilter();
   render();
 });

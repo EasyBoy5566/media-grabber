@@ -43,16 +43,7 @@
           <label><input type="checkbox" id="skipCss" checked> 略過 CSS 背景圖</label>
           <label><input type="checkbox" id="dedupe" checked> 略過其他頁已下載過的檔案（網站 logo 等）</label>
         </div>
-        <div class="sizeRow">
-          <span class="muted">圖片尺寸（px，0 = 不限）</span>
-          <div class="chips" id="sizePresets">
-            <button type="button" data-size="0">不限</button>
-            <button type="button" data-size="100">≥ 100</button>
-            <button type="button" data-size="300">≥ 300</button>
-            <button type="button" data-size="600">≥ 600</button>
-            <button type="button" data-size="1000">≥ 1000</button>
-          </div>
-        </div>
+        <span class="muted">圖片尺寸（px，0 = 不限）</span>
         <div class="grid4">
           <label>最小寬度 <input id="minW" type="number" value="200" min="0"></label>
           <label>最大寬度 <input id="maxW" type="number" value="0" min="0"></label>

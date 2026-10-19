@@ -36,8 +36,14 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
+/* Chrome 的 popup 最高 600px，超過就會在最右邊出現捲軸；
+   所以固定高度，只讓中間的縮圖區捲動 */
+html, body { overflow: hidden; }
 body {
   width: 480px;
+  height: 580px;
+  display: flex;
+  flex-direction: column;
   margin: 0;
   font: 13px/1.45 "Segoe UI", system-ui, "Microsoft JhengHei", sans-serif;
   background: var(--bg);
@@ -76,7 +82,23 @@ svg {
   cursor: pointer;
 }
 .version:hover { color: var(--accent); text-decoration: underline; }
-.actions { display: flex; gap: 4px; }
+.actions { display: flex; align-items: center; gap: 4px; }
+.text-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.text-btn:hover { border-color: var(--accent); color: var(--accent); }
+.text-btn svg { width: 15px; height: 15px; }
 .icon-btn {
   width: 32px;
   height: 32px;
@@ -158,34 +180,50 @@ svg {
 .tabs button.active .count { background: var(--accent-soft); color: var(--accent); }
 
 /* ---------- 尺寸篩選 ---------- */
-.filter-panel { padding: 8px 12px 0; display: flex; flex-direction: column; gap: 6px; }
-.row { display: flex; align-items: center; gap: 6px; }
+.sizebar { display: flex; align-items: center; gap: 8px; padding: 8px 12px 0; }
 .label { color: var(--muted); font-size: 12px; white-space: nowrap; }
-.label.gap { margin-left: 8px; }
-.chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.chips button {
-  padding: 2px 9px;
+.field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: 28px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--surface);
+  color: var(--muted);
   font-size: 12px;
-  cursor: pointer;
-  transition: all .15s;
 }
-.chips button:hover { border-color: var(--accent); color: var(--accent); }
-.chips button.active { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-.custom input {
-  width: 58px;
-  padding: 3px 6px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
+.field:focus-within, .folder:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.field input {
+  width: 52px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
   color: var(--fg);
   font: inherit;
-  font-size: 12px;
+  text-align: center;
+  -moz-appearance: textfield;
 }
-.custom input:focus, .folder:focus-within { outline: 2px solid var(--accent); outline-offset: -1px; }
-.dash, .unit { color: var(--muted); }
+.field input::-webkit-outer-spin-button,
+.field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field input::placeholder { color: var(--muted); opacity: .7; }
+.dash { color: var(--muted); }
+.clear-btn {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.clear-btn:hover { background: var(--surface-2); color: var(--fg); }
+.clear-btn svg { width: 14px; height: 14px; }
 
 /* ---------- 選取列 ---------- */
 .selbar {
@@ -213,16 +251,23 @@ svg {
 
 /* ---------- 媒體格線 ---------- */
 .grid {
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: max-content; /* 卡片有 overflow:hidden，不固定列高會被壓扁 */
+  align-content: start;
   gap: 8px;
-  padding: 6px 12px 12px;
-  max-height: 400px;
-  min-height: 160px;
+  padding: 6px 6px 12px 12px; /* 右邊留 6px + 6px 捲軸空間 */
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
-.grid::-webkit-scrollbar { width: 8px; }
-.grid::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+/* 細捲軸，滑鼠移到縮圖區才明顯 */
+.grid::-webkit-scrollbar { width: 6px; }
+.grid::-webkit-scrollbar-track { background: transparent; }
+.grid::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+.grid:hover::-webkit-scrollbar-thumb { background: var(--line); }
 
 .card {
   position: relative;
@@ -248,7 +293,9 @@ svg {
     repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 14px 14px;
   color: var(--muted);
 }
-.thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.thumb { overflow: hidden; }
+/* 縮圖固定填滿縮圖框再等比縮放；只用 max-height 的話，大圖會撐出框外蓋住下方文字 */
+.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .thumb > svg { width: 30px; height: 30px; stroke-width: 1.5; }
 .thumb.media { background: linear-gradient(135deg, var(--accent-soft), var(--surface-2)); color: var(--accent); }
 
@@ -272,7 +319,7 @@ svg {
 .card.checked .tick svg { opacity: 1; }
 .card.disabled .tick { display: none; }
 
-.tag, .dim {
+.tag {
   position: absolute;
   padding: 1px 6px;
   border-radius: 4px;
@@ -285,7 +332,6 @@ svg {
 }
 .tag { top: 6px; right: 6px; }
 .tag.hls { background: var(--accent); }
-.dim { bottom: 6px; right: 6px; font-weight: 500; }
 
 .meta { padding: 6px 8px 7px; }
 .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; font-weight: 500; }
