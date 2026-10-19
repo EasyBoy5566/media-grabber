@@ -13,12 +13,21 @@ function collectMedia() {
     try { return new URL(u, document.baseURI).href; } catch { return null; }
   };
 
+  // Meta（Threads / Instagram）的 CDN 網址同一個檔案會帶不同的簽章參數，只比對路徑
+  const dedupeKey = (url) => (/\.(fbcdn\.net|cdninstagram\.com)\//.test(url) ? url.split('?')[0] : url);
+
   const add = (rawUrl, type, extra = {}) => {
     const url = toAbs(rawUrl);
-    if (!url || seen.has(url)) return;
+    if (!url || seen.has(dedupeKey(url))) return;
     if (!/^(https?:|data:|blob:)/i.test(url)) return;
-    seen.add(url);
-    items.push({ url, type, source: extra.source || '', width: extra.width || 0, height: extra.height || 0 });
+    seen.add(dedupeKey(url));
+    items.push({
+      url, type,
+      source: extra.source || '',
+      width: extra.width || 0,
+      height: extra.height || 0,
+      name: extra.name || '', // 建議檔名（不含副檔名），例如 threads_zuck_DeZtrvAEfEr
+    });
   };
 
   // srcset 取最大的那張（依 w 或 x 描述子）
@@ -40,6 +49,26 @@ function collectMedia() {
     if (AUDIO_EXT.test(u)) return 'audio';
     return null;
   };
+
+  // 0. Threads（以及結構相同的 Instagram）：頁面內嵌的 JSON 裡有每則貼文的 video_versions，
+  //    比畫面上已渲染的 <video> 更完整，第一個版本通常就是最高畫質。
+  const isThreads = /(^|\.)threads\.(com|net)$/.test(location.hostname);
+  for (const s of document.querySelectorAll('script[type="application/json"]')) {
+    if (!s.textContent.includes('video_versions')) continue;
+    let data;
+    try { data = JSON.parse(s.textContent); } catch { continue; }
+    const walk = (o, post, depth) => {
+      if (!o || typeof o !== 'object' || depth > 80) return;
+      if (o.code) post = { code: o.code, user: o.user?.username || post?.user };
+      if (Array.isArray(o.video_versions) && o.video_versions[0]?.url) {
+        const v = o.video_versions[0];
+        const name = post?.code ? [isThreads ? 'threads' : 'instagram', post.user, post.code].filter(Boolean).join('_') : '';
+        add(v.url, 'video', { source: isThreads ? 'threads' : 'instagram', width: v.width, height: v.height, name });
+      }
+      for (const k in o) walk(o[k], post, depth + 1);
+    };
+    walk(data, null, 0);
+  }
 
   // 1. <img>
   document.querySelectorAll('img').forEach((img) => {
@@ -65,7 +94,15 @@ function collectMedia() {
   document.querySelectorAll('video, audio').forEach((el) => {
     const type = el.tagName === 'VIDEO' ? 'video' : 'audio';
     const size = type === 'video' ? { width: el.videoWidth, height: el.videoHeight } : {};
-    add(el.currentSrc || el.src, type, { ...size, source: el.tagName.toLowerCase() });
+    // Threads：從最近的貼文連結 /@作者/post/代碼 取檔名
+    let name = '';
+    if (isThreads) {
+      for (let p = el, d = 0; p && d < 25 && !name; p = p.parentElement, d++) {
+        const m = p.querySelector?.('a[href*="/post/"]')?.getAttribute('href')?.match(/@([^/]+)\/post\/([^/?#]+)/);
+        if (m) name = `threads_${m[1]}_${m[2]}`;
+      }
+    }
+    add(el.currentSrc || el.src, type, { ...size, source: el.tagName.toLowerCase(), name });
     el.querySelectorAll('source[src]').forEach((s) => add(s.src, type, { ...size, source: 'source' }));
     if (el.poster) add(el.poster, 'image', { source: 'video poster' });
   });

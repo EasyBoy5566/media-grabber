@@ -13,6 +13,7 @@ function sanitizeFolder(folder) {
 }
 
 function baseName(item) {
+  if (item.name) return item.name;
   if (item.url.startsWith('data:')) return `${item.type} (data URL)`;
   try {
     const last = new URL(item.url).pathname.split('/').filter(Boolean).pop();

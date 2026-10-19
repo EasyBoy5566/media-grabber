@@ -195,6 +195,7 @@ const SOURCE_LABEL = {
   'img': '圖片', 'img srcset': '圖片（最大尺寸）', 'picture': '圖片', 'css background': 'CSS 背景',
   'video poster': '影片封面', 'meta': '分享預覽圖', 'link': '連結', 'network': '網路請求',
   'video': '影片', 'audio': '音訊', 'source': '影片來源',
+  'threads': 'Threads 貼文', 'instagram': 'Instagram 貼文',
 };
 
 function describe(item) {
