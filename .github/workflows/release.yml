@@ -1,0 +1,36 @@
+# 推送 v* 標籤（例如 v1.5.0）時，自動把 media-grabber 資料夾打包成 zip 並建立 GitHub Release。
+# 擴充功能會讀取最新 Release 的版本號來提示使用者更新。
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 確認標籤與 manifest 版本一致
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VER=$(jq -r .version media-grabber/manifest.json)
+          if [ "$TAG" != "$VER" ]; then
+            echo "::error::標籤 v$TAG 與 manifest.json 的版本 $VER 不一致"
+            exit 1
+          fi
+
+      - name: 打包擴充功能
+        run: zip -r "media-grabber-${GITHUB_REF_NAME}.zip" media-grabber
+
+      - name: 建立 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "media-grabber-${GITHUB_REF_NAME}.zip" \
+            --title "Media Grabber $GITHUB_REF_NAME" \
+            --generate-notes

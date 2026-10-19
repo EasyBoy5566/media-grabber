@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多頁批次下載 - Media Grabber</title>
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <main class="wide">
+    <h1>多頁批次下載</h1>
+    <p class="src">設定網址裡的頁碼位置與範圍，工具會逐頁開啟、分析並下載媒體。</p>
+
+    <form id="form">
+      <fieldset>
+        <legend>網址</legend>
+        <label>網址範本（用 <code>{page}</code> 代表頁碼）
+          <input id="template" type="text" placeholder="https://example.com/gallery/{page}" required>
+        </label>
+        <div id="numbersRow" hidden>
+          <span class="muted">點選原網址中的數字，設為頁碼：</span>
+          <div id="numbers" class="chips"></div>
+        </div>
+        <p class="muted" id="preview"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>頁碼範圍</legend>
+        <div class="grid4">
+          <label>起始頁 <input id="start" type="number" value="1" min="0"></label>
+          <label>結束頁 <input id="end" type="number" value="10" min="0"></label>
+          <label>間隔 <input id="step" type="number" value="1" min="1"></label>
+          <label title="例如 3 → 001、002">補零位數 <input id="pad" type="number" value="0" min="0" max="10"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>要下載的媒體</legend>
+        <div class="checks">
+          <label><input type="checkbox" id="typeImage" checked> 圖片</label>
+          <label><input type="checkbox" id="typeVideo" checked> 影片</label>
+          <label><input type="checkbox" id="typeAudio"> 音訊</label>
+          <label><input type="checkbox" id="skipCss" checked> 略過 CSS 背景圖</label>
+          <label><input type="checkbox" id="dedupe" checked> 略過其他頁已下載過的檔案（網站 logo 等）</label>
+        </div>
+        <div class="sizeRow">
+          <span class="muted">圖片尺寸（px，0 = 不限）</span>
+          <div class="chips" id="sizePresets">
+            <button type="button" data-size="0">不限</button>
+            <button type="button" data-size="100">≥ 100</button>
+            <button type="button" data-size="300">≥ 300</button>
+            <button type="button" data-size="600">≥ 600</button>
+            <button type="button" data-size="1000">≥ 1000</button>
+          </div>
+        </div>
+        <div class="grid4">
+          <label>最小寬度 <input id="minW" type="number" value="200" min="0"></label>
+          <label>最大寬度 <input id="maxW" type="number" value="0" min="0"></label>
+          <label>最小高度 <input id="minH" type="number" value="200" min="0"></label>
+          <label>最大高度 <input id="maxH" type="number" value="0" min="0"></label>
+        </div>
+        <label>網址需包含（可留空，例如 <code>/uploads/</code>）<input id="mustContain" type="text"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>執行方式</legend>
+        <div class="grid2">
+          <label>頁面載入後再等（秒）<input id="waitAfter" type="number" value="2" min="0" step="0.5"></label>
+          <label>每頁之間間隔（秒）<input id="delay" type="number" value="1" min="0" step="0.5"></label>
+          <label title="遇到 404 或沒有媒體的頁面，連續達到這個次數就提前停止">連續幾頁失敗或空白就停止（0 = 不停）<input id="stopAfter" type="number" value="3" min="0"></label>
+          <label>存到 下載/ 底下的資料夾 <input id="folder" type="text" value="MediaGrabber"></label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" id="scroll" checked> 自動捲動到底（載入延遲載入的圖片）</label>
+          <label><input type="checkbox" id="perPageDir" checked> 每頁各存一個子資料夾（p001、p002…）</label>
+          <label><input type="checkbox" id="closeWhenDone" checked> 完成後關閉工作視窗</label>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button id="startBtn" class="primary" type="submit">開始</button>
+        <button id="stopBtn" type="button" hidden>停止</button>
+        <span id="summary" class="muted"></span>
+      </div>
+    </form>
+
+    <section id="progress" hidden>
+      <div class="bar"><div id="barFill"></div></div>
+      <table>
+        <thead><tr><th>頁</th><th>網址</th><th>找到</th><th>下載</th><th>狀態</th></tr></thead>
+        <tbody id="log"></tbody>
+      </table>
+    </section>
+
+    <p id="status" class="status"></p>
+  </main>
+
+  <script src="collect.js"></script>
+  <script src="shared.js"></script>
+  <script src="batch.js"></script>
+</body>
+</html>

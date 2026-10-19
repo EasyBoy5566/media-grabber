@@ -1,0 +1,125 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --card: #f6f7f9;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  --ok: #15803d;
+  --err: #b91c1c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1d21;
+    --fg: #e6e7ea;
+    --muted: #9aa1ab;
+    --line: #2e3238;
+    --card: #24272c;
+    --accent: #3b82f6;
+    --ok: #4ade80;
+    --err: #f87171;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.5 system-ui, "Microsoft JhengHei", sans-serif;
+}
+main { max-width: 640px; margin: 40px auto; padding: 0 16px; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+.src { color: var(--muted); font-size: 12px; word-break: break-all; margin: 0 0 20px; }
+
+section { display: flex; flex-direction: column; gap: 12px; }
+label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; }
+select, input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+}
+.info { color: var(--muted); margin: 0; }
+
+button {
+  align-self: flex-start;
+  padding: 8px 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
+
+.bar { height: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+#barFill { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+#progressText { margin: 0; font-variant-numeric: tabular-nums; }
+
+.status { margin-top: 16px; white-space: pre-wrap; }
+.status.ok { color: var(--ok); }
+.status.err { color: var(--err); }
+.hint {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 12px;
+}
+
+/* ---------- 多頁批次下載 ---------- */
+main.wide { max-width: 860px; }
+.muted { color: var(--muted); font-size: 12px; }
+code { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 12px; }
+
+form { display: flex; flex-direction: column; gap: 16px; }
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px 14px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+legend { padding: 0 6px; font-weight: 600; }
+.grid4, .grid2 { display: grid; gap: 10px; }
+.grid4 { grid-template-columns: repeat(4, 1fr); }
+.grid2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 600px) {
+  .grid4 { grid-template-columns: repeat(2, 1fr); }
+  .grid2 { grid-template-columns: 1fr; }
+}
+.checks { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.checks label { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--fg); cursor: pointer; }
+input[type=checkbox] { padding: 0; margin: 0; }
+#preview { margin: 0; word-break: break-all; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0; margin-top: 4px; font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; }
+.chips span { padding: 3px 0; color: var(--muted); }
+.chips button {
+  padding: 2px 6px;
+  margin: 0 1px;
+  border-radius: 4px;
+  font: inherit;
+}
+.chips button.active { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+
+.actions { display: flex; align-items: center; gap: 10px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 500; }
+td.url { max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+td.ok { color: var(--ok); }
+td.err { color: var(--err); }
+.sizeRow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.sizeRow .chips { margin-top: 0; font-family: inherit; }

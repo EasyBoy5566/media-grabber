@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Media Grabber",
+  "version": "1.4.0",
+  "description": "分析目前網頁中的圖片、影片與音訊（含 HLS .m3u8 串流），勾選後批次下載。",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage",
+    "alarms",
+    "webRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "分析此頁媒體",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

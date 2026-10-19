@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>Media Grabber</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="appbar">
+    <div class="brand">
+      <img src="icons/icon-32.png" alt="" width="24" height="24">
+      <div>
+        <strong>Media Grabber</strong>
+        <button id="version" class="version" title="檢查更新"></button>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="batch" class="icon-btn" title="多頁批次下載">
+        <svg viewBox="0 0 24 24"><rect x="7" y="3" width="13" height="15" rx="2"/><path d="M4 7v12a2 2 0 0 0 2 2h10"/></svg>
+      </button>
+      <button id="rescan" class="icon-btn" title="重新分析">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="updateBanner" class="banner" hidden>
+    <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+    <div class="banner-text">
+      <strong id="updateTitle"></strong>
+      <span>下載後解壓縮、覆蓋原本的資料夾，再按「重新載入」</span>
+    </div>
+    <a id="updateLink" class="btn-sm primary" target="_blank" rel="noopener">下載</a>
+    <button id="reloadExt" class="btn-sm">重新載入</button>
+  </div>
+
+  <nav class="tabs" id="filters">
+    <button data-type="all" class="active">全部<span class="count"></span></button>
+    <button data-type="image">圖片<span class="count"></span></button>
+    <button data-type="video">影片<span class="count"></span></button>
+    <button data-type="audio">音訊<span class="count"></span></button>
+  </nav>
+
+  <section class="filter-panel">
+    <div class="row">
+      <span class="label">圖片尺寸</span>
+      <div class="chips" id="sizeChips">
+        <button data-preset="0">不限</button>
+        <button data-preset="100">≥100</button>
+        <button data-preset="300">≥300</button>
+        <button data-preset="600">≥600</button>
+        <button data-preset="1000">≥1000</button>
+        <button data-preset="custom">自訂</button>
+      </div>
+    </div>
+    <div class="row custom" id="customSize" hidden>
+      <span class="label">寬</span>
+      <input id="minW" type="number" min="0" placeholder="最小"><span class="dash">–</span><input id="maxW" type="number" min="0" placeholder="最大">
+      <span class="label gap">高</span>
+      <input id="minH" type="number" min="0" placeholder="最小"><span class="dash">–</span><input id="maxH" type="number" min="0" placeholder="最大">
+      <span class="unit">px</span>
+    </div>
+  </section>
+
+  <div class="selbar">
+    <label class="check">
+      <input type="checkbox" id="selectAll">
+      <span class="box"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>
+      全選
+    </label>
+    <span id="selCount" class="muted"></span>
+    <span id="sizeNote" class="note"></span>
+  </div>
+
+  <main id="list" class="grid"></main>
+
+  <footer>
+    <label class="folder" title="存到「下載」底下的這個資料夾">
+      <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <input id="folder" type="text" value="MediaGrabber" placeholder="資料夾名稱">
+    </label>
+    <button id="download" class="primary-btn" disabled>
+      <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      <span id="downloadLabel">下載</span>
+      <span id="downloadCount" class="pill">0</span>
+    </button>
+  </footer>
+
+  <script src="collect.js"></script>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

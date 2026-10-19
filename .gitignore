@@ -1,0 +1,7 @@
+*.zip
+*.crx
+*.pem
+__pycache__/
+.DS_Store
+Thumbs.db
+.claude/

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HLS 下載 - Media Grabber</title>
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <main>
+    <h1>HLS 串流下載</h1>
+    <p class="src" id="src"></p>
+
+    <section id="setup" hidden>
+      <label id="qualityRow" hidden>畫質
+        <select id="quality"></select>
+      </label>
+      <label id="audioRow" hidden>音軌
+        <select id="audio"></select>
+      </label>
+      <label>檔名
+        <input id="filename" type="text">
+      </label>
+      <p class="info" id="info"></p>
+      <button id="start" class="primary">開始下載</button>
+    </section>
+
+    <section id="progress" hidden>
+      <div class="bar"><div id="barFill"></div></div>
+      <p id="progressText"></p>
+      <button id="cancel">取消</button>
+    </section>
+
+    <p id="status" class="status"></p>
+    <pre id="hint" class="hint" hidden></pre>
+  </main>
+
+  <script src="shared.js"></script>
+  <script src="hls-core.js"></script>
+  <script src="hls-page.js"></script>
+</body>
+</html>
